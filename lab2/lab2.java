@@ -3,6 +3,12 @@ package lab2;
 import java.util.Scanner;
 
 public class lab2 {
+    /*
+        First Input should be integer like: 9
+        Next input should be array like: 1,2,3,4,5,6,7,8,9
+        Note: Do not use any spaces nor square brackets to properly get results
+    */
+
     public static void main(String[] args) {
         int len, left, right, tmp;
         Scanner scan = new Scanner(System.in);
