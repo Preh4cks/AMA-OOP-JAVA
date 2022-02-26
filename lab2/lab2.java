@@ -25,6 +25,11 @@ public class lab2 {
             String[] asd = txt.split(",", -1);
 
             for(int i = 0; i < len; i++) {
+                if(Integer.parseInt(asd[i]) < 1) {
+                    System.out.println("Array should not contain any negative numbers");
+                    arr = null;
+                    break;
+                }
                 arr[i] = Integer.parseInt(asd[i]);
             }
 
