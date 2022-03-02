@@ -125,24 +125,48 @@ class DbModel {
     /* Docu: add_patient(Connection conn)
      *  "Get and Validate's user input"
      *  Requires 1 argument of Connection
-     *  Author: Arjhay Frias 02/26/2022 */
+     *  Author: Arjhay Frias 02/26/2022
+     *  UPDATED: 03/03/2022 */
     public void add_patient(Connection conn) {
         Scanner scan = new Scanner(System.in);
-        // Validate First Name
+        // Get User's first_name and last_name and validate if patient already exists in the database
         while(true) {
-            System.out.print("Enter First Name: ");
-            this.first_name = scan.nextLine();
-            if(!this.first_name.matches(".*[0-9].*") && this.first_name.length() > 2) {
-                break;
+            // Validate First Name
+            while(!this.first_name.matches("[a-zA-Z]+")) {
+                System.out.print("Enter First Name: ");
+                this.first_name = scan.nextLine();
+                if(!this.first_name.matches("[a-zA-Z]+")) {
+                    System.out.println("Invalid First Name, It should not contain numbers");
+                }
             }
-        }
 
-        // Validate last Name
-        while(true) {
-            System.out.print("Enter Last Name: ");
-            this.last_name = scan.nextLine();
-            if(!this.last_name.matches(".*[0-9].*") && this.last_name.length() > 2) {
-                break;
+            // Validate last Name
+            while(!this.last_name.matches("[a-zA-Z]+")) {
+                System.out.print("Enter Last Name: ");
+                this.last_name = scan.nextLine();
+                if(!this.last_name.matches("[a-zA-Z]+")) {
+                    System.out.println("Invalid Last Name, It should not contain numbers");
+                }
+            }
+
+            // Check for Patient already exists in the database
+            try {
+                String query = "SELECT *, TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) AS age FROM patients WHERE first_name = ? AND last_name = ?;";
+                PreparedStatement token = conn.prepareStatement(query);
+                token.setString(1, this.first_name);
+                token.setString(2, this.last_name);
+                System.out.println("");
+                ResultSet patient = token.executeQuery();
+                if(patient.next() != false) {
+                    // Reset if user already exists
+                    this.first_name = "0";
+                    this.last_name = "0";
+                    System.out.println("Patient Already Exists!");
+                } else {
+                    break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
@@ -156,12 +180,18 @@ class DbModel {
         while(!this.birth_date.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
             System.out.print("Enter Birth Day [yyyy-mm-dd]: ");
             this.birth_date = scan.nextLine();
+            if(!this.birth_date.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+                System.out.println("Invalid Format, please try again.");
+            }
         }
 
         // Validate Discharge Date
         while(!this.discharge_date.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
             System.out.print("Enter Discharge Date [yyyy-mm-dd]: ");
             this.discharge_date = scan.nextLine();
+            if(!this.discharge_date.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+                System.out.println("Invalid Format, please try again.");
+            }
         }
         insert_patient(conn);
     }
